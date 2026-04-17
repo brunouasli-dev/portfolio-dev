@@ -1,42 +1,60 @@
 # Portfolio Dev
 
-Template de portfólio para quem quer publicar um site pessoal com visual pronto e edição simples.
+Template de portfólio pensado para quem quer baixar, trocar seus dados e publicar sem precisar entender o projeto inteiro.
 
-Este projeto foi pensado para pessoas leigas. Se você não sabe programar muito, tudo bem: na maior parte dos casos você só vai abrir alguns arquivos, trocar textos, salvar e pronto.
+Se você for leigo, pode tratar assim:
+
+- quer trocar nome, bio e contatos: edite `src/lib/site-profile.ts`
+- quer trocar projetos, posts e habilidades sem Supabase: edite `src/lib/storage.ts`
+- quer usar banco real: configure `.env` e rode `supabase/setup.sql`
+
+## Precisa de ajuda?
+
+Se você quiser me contratar para:
+
+- subir este portfólio
+- trocar os textos
+- conectar com Supabase
+- ajustar imagens
+- personalizar o projeto para o seu perfil
+
+Fale comigo em:
+
+- WhatsApp: `https://wa.me/5541997609480`
+- Email: `brunouaslidev@gmail.com`
+- GitHub: `https://github.com/brunouasli-dev`
+
+Troque esses dados pelos seus contatos reais antes de publicar o repositório.
 
 ## Aviso importante
 
-Todos os dados, textos, nomes, projetos, posts e exemplos usados neste portfólio são **fictícios** e existem apenas para demonstrar como o template funciona.
+Todos os dados, nomes, imagens, textos, projetos e posts que vêm neste projeto são **fakes** e usados apenas como exemplo.
 
-As imagens, cenários e parte do conteúdo foram gerados com ajuda de **IA**, apenas para deixar o projeto mais divertido, visual e fácil de entender para quem baixar o template.
+Parte das imagens e do conteúdo foi gerada com ajuda de **IA** para deixar o template mais divertido e mais fácil de visualizar.
 
-Antes de publicar seu portfólio, o ideal é trocar:
+Antes de publicar, o ideal é trocar:
 
 - nome
 - email
 - links
-- textos
+- bio
 - projetos
 - posts
+- habilidades
 - imagens
+- currículo
 
-## Antes de começar
+## Arquivos principais
 
-Você vai mexer principalmente nestes arquivos:
+Os arquivos mais importantes para edição são:
 
 - `src/lib/site-profile.ts`
 - `src/lib/storage.ts`
-- `.env` ou `.env.example`
-
-## O que editar primeiro
-
-Se você quer só trocar nome, textos e contatos, comece por:
-
-- `src/lib/site-profile.ts`
-
-Se você quer trocar projetos, posts e habilidades quando não estiver usando Supabase, edite:
-
-- `src/lib/storage.ts`
+- `src/lib/client.ts`
+- `src/lib/content-store.ts`
+- `src/lib/media-storage.ts`
+- `.env.example`
+- `supabase/setup.sql`
 
 ## Como rodar o projeto
 
@@ -52,21 +70,179 @@ npm install
 npm run dev
 ```
 
-3. Abra no navegador o endereço mostrado no terminal. Normalmente:
+3. Abra no navegador:
 
 ```txt
 http://localhost:5173
 ```
 
-## Como acessar a área de login
+## Rotas principais
 
-A tela de login fica em:
+- site público: `http://localhost:5173`
+- login: `http://localhost:5173/login`
+- admin: `http://localhost:5173/admin`
+- projetos: `http://localhost:5173/projetos`
+- habilidades: `http://localhost:5173/habilidades`
+- blog: `http://localhost:5173/blog`
+
+## O que editar primeiro
+
+Se você quer só personalizar o portfólio, comece por:
+
+- `src/lib/site-profile.ts`
+
+Se você não vai usar Supabase e quer mudar os conteúdos de exemplo, edite:
+
+- `src/lib/storage.ts`
+
+## Como trocar nome, bio, contatos e textos
+
+Abra:
+
+- `src/lib/site-profile.ts`
+
+Ali ficam dados como:
+
+- nome
+- nome curto
+- cargo
+- frase de destaque
+- email
+- WhatsApp
+- LinkedIn
+- localização
+- currículo
+- imagem principal
+- imagem de destaque
+
+Também é nesse arquivo que você troca os textos da home, da seção sobre e dos blocos institucionais.
+
+Exemplo simples:
+
+```ts
+export const siteProfile = {
+  fullName: 'Seu Nome',
+  shortName: 'Seu Nome',
+  role: 'Seu cargo',
+  roleHighlight: 'Seu destaque',
+  email: 'contato@seudominio.com',
+  linkedinUrl: 'https://www.linkedin.com/in/seu-perfil',
+  whatsappUrl: 'https://wa.me/5500000000000',
+}
+```
+
+## Como trocar projetos, posts e habilidades sem Supabase
+
+Se você não configurar Supabase, o projeto usa os dados locais de:
+
+- `src/lib/storage.ts`
+
+Os principais blocos são:
+
+- `createSampleProjects()`
+- `createSampleBlogPosts()`
+- `createSampleStacks()`
+
+### Projeto local
+
+Exemplo:
+
+```ts
+{
+  id: crypto.randomUUID(),
+  title: 'Nome do projeto',
+  summary: 'Resumo do projeto',
+  stack: 'React, TypeScript, Node.js',
+  url: '',
+  imageUrl: '/minha-imagem.png',
+  imageAlt: 'Descrição da imagem do projeto',
+  likes: 10,
+  views: 100,
+  shares: 5,
+  published: true,
+  updatedAt: daysAgo(1),
+}
+```
+
+Campos importantes:
+
+- `title`: nome do projeto
+- `summary`: descrição do card e da página
+- `stack`: tecnologias
+- `url`: link do projeto
+- `imageUrl`: imagem da capa
+- `imageAlt`: texto alternativo da imagem
+- `published`: mostra ou esconde o item
+
+Se `url` estiver vazio, o botão abre o popup de `link indisponível`.
+
+### Post local
+
+Exemplo:
+
+```ts
+{
+  id: crypto.randomUUID(),
+  title: 'Título do post',
+  excerpt: 'Resumo curto',
+  content: 'Texto completo',
+  category: 'Frontend',
+  imageUrl: '/post-exemplo.png',
+  imageAlt: 'Descrição da imagem do post',
+  likes: 10,
+  views: 100,
+  shares: 5,
+  published: true,
+  updatedAt: daysAgo(1),
+}
+```
+
+### Habilidade local
+
+Exemplo:
+
+```ts
+{
+  id: crypto.randomUUID(),
+  name: 'React',
+  link: 'https://react.dev',
+  imageUrl: 'https://placehold.co/600x400?text=React',
+  imageAlt: 'Placeholder com o nome React.',
+  updatedAt: daysAgo(1),
+}
+```
+
+Se `imageUrl` ficar vazio, a interface mostra um placeholder visual de `Sem imagem`.
+
+## O que é `imageAlt`
+
+`imageAlt` é o texto alternativo da imagem. Ele é usado para acessibilidade e também ajuda quando a imagem não carrega.
+
+Hoje ele existe em:
+
+- projetos
+- posts
+- habilidades
+
+Se você usa modo local, preencha isso em:
+
+- `src/lib/storage.ts`
+
+Se você usa Supabase, preencha isso no admin:
+
+- `/admin/projetos`
+- `/admin/blog`
+- `/admin/habilidades`
+
+## Como acessar o login
+
+A página de login fica em:
 
 ```txt
 http://localhost:5173/login
 ```
 
-Depois de entrar, a área administrativa fica em:
+Depois do login, o admin fica em:
 
 ```txt
 http://localhost:5173/admin
@@ -74,13 +250,11 @@ http://localhost:5173/admin
 
 ## Como trocar o email e a senha do modo local
 
-Se você **não** estiver usando Supabase, o projeto usa um login local de exemplo.
-
-Esse login fica no arquivo:
+Se você **não** estiver usando Supabase, o projeto usa um login local de exemplo em:
 
 - `src/lib/client.ts`
 
-Procure por este trecho:
+Procure por:
 
 ```ts
 const validUser = 'pinguim-eletrico@gmail.com'
@@ -96,212 +270,127 @@ const validUser = 'meuemail@exemplo.com'
 const validPass = 'minhasenha123'
 ```
 
-Depois salve o arquivo e reinicie o projeto se necessário.
+## Diferença entre modo local e modo Supabase
 
-## Importante sobre o modo local
+### Sem Supabase
 
-O login local existe só para facilitar testes em projetos sem Supabase.
+Se você não configurar as variáveis do `.env`, o projeto:
 
-Se o Supabase **não** estiver configurado, o projeto:
+- usa login local
+- usa os dados do `src/lib/storage.ts`
+- salva localmente no navegador
 
-- usa o login local
-- usa os dados do arquivo `src/lib/storage.ts`
+### Com Supabase
 
-Se o Supabase estiver configurado corretamente, o projeto tenta usar:
+Se você configurar o Supabase corretamente, o projeto:
 
-- autenticação real do Supabase
-- dados vindos do banco
+- usa autenticação real do Supabase
+- usa dados reais do banco
+- para de usar os dados do `src/lib/storage.ts` para conteúdo
 
-## Como trocar seu nome, textos e contatos
+Ou seja:
 
-Abra o arquivo:
+- `storage.ts` é para exemplo e modo local
+- Supabase é para uso real
 
-- `src/lib/site-profile.ts`
+## Como configurar o `.env`
 
-Lá você verá algo assim:
+Copie o `.env.example` para `.env` e preencha:
 
-```ts
-export const siteProfile = {
-  fullName: 'Pinguim Elétrico',
-  shortName: 'Pinguim',
-  role: 'desenvolvedor júnior',
-  roleHighlight: 'interfaces web',
-  brandTagline: 'curioso, elétrico e em evolução constante',
-  email: 'contato@example.com',
-  linkedinUrl: 'https://www.linkedin.com/in/seu-perfil',
-  whatsappUrl: 'https://wa.me/5500000000000',
-}
+```env
+VITE_SUPABASE_URL=https://SEU-PROJETO.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=SUA_CHAVE_PUBLICA
 ```
 
-Troque os valores entre aspas pelos seus dados.
+Depois reinicie o projeto:
 
-### Campos mais importantes
-
-- `fullName`: seu nome principal
-- `shortName`: nome curto
-- `role`: seu cargo
-- `roleHighlight`: complemento do cargo
-- `brandTagline`: frase curta da sua marca
-- `location`: sua cidade, estado ou país
-- `yearsOfExperience`: tempo de experiência
-- `email`: seu email
-- `linkedinUrl`: seu LinkedIn
-- `whatsappUrl`: seu WhatsApp
-- `resumePath`: caminho do currículo
-- `profileImagePath`: foto principal
-- `showcaseImagePath`: imagem usada em destaque
-
-### Textos das seções
-
-No mesmo arquivo você também edita:
-
-- `contactCta`: texto da seção de contato
-- `heroDescription`: texto principal da home
-- `aboutTitle`: título da seção “sobre”
-- `aboutParagraphs`: parágrafos da seção “sobre”
-- `capabilityIntro`: texto de introdução das habilidades
-- `capabilities`: lista de blocos com título e descrição
-
-Exemplo:
-
-```ts
-aboutParagraphs: [
-  'Texto 1.',
-  'Texto 2.',
-  'Texto 3.',
-]
+```bash
+npm run dev
 ```
 
-Cada linha entre aspas vira um parágrafo no site.
+## Setup do Supabase
 
-## Como trocar os projetos, posts e habilidades sem Supabase
+Se você for usar Supabase, precisa rodar o arquivo:
 
-Se você não for usar Supabase, o site usa os dados locais do arquivo:
+- `supabase/setup.sql`
 
-- `src/lib/storage.ts`
+Esse arquivo já cria:
 
-Os blocos principais são:
+- tabela `projects`
+- tabela `blog_posts`
+- tabela `stacks`
+- coluna `image_alt`
+- funções RPC de métricas
+- bucket `assets`
+- policies de storage
 
-- `createSampleProjects()`
-- `createSampleBlogPosts()`
-- `createSampleStacks()`
+### Como rodar
 
-### Como trocar projetos
+1. Abra o painel do Supabase.
+2. Vá em `SQL Editor`.
+3. Abra o arquivo `supabase/setup.sql`.
+4. Copie todo o conteúdo.
+5. Cole no editor do Supabase.
+6. Execute.
 
-Procure por:
+Se você configurar o `.env` mas **não** rodar esse SQL, o projeto pode quebrar com erros de:
 
-```ts
-function createSampleProjects(): ProjectItem[] {
+- tabela não encontrada
+- coluna `image_alt` não encontrada
+- função RPC não encontrada
+- bucket não encontrado
+- policy de upload bloqueando envio
+
+## Primeiro usuário no Supabase
+
+Este projeto não deixa cadastro público aberto para qualquer pessoa.
+
+Isso foi feito de propósito para evitar que usuários leigos publiquem o site com signup liberado e acabem deixando estranhos entrarem no admin.
+
+Por isso, o primeiro acesso deve ser criado manualmente no Supabase:
+
+1. Abra o painel do Supabase.
+2. Vá em `Authentication`.
+3. Vá em `Users`.
+4. Clique em `Add user`.
+5. Crie o email e a senha.
+
+Depois faça login em:
+
+```txt
+http://localhost:5173/login
 ```
 
-Cada projeto tem este formato:
+## Upload de imagens no Supabase
 
-```ts
-{
-  id: crypto.randomUUID(),
-  title: 'Nome do projeto',
-  summary: 'Descrição do projeto',
-  stack: 'React, TypeScript, Node.js',
-  url: '',
-  imageUrl: '/nome-da-imagem.png',
-  likes: 10,
-  views: 100,
-  shares: 5,
-  published: true,
-  updatedAt: daysAgo(1),
-}
-```
+O projeto usa o bucket:
 
-O que cada campo faz:
+- `assets`
 
-- `title`: nome do projeto
-- `summary`: descrição do projeto
-- `stack`: tecnologias do projeto
-- `url`: link do projeto
-- `imageUrl`: imagem da capa
-- `likes`, `views`, `shares`: números iniciais
-- `published`: `true` para mostrar, `false` para esconder
+As imagens são organizadas em pastas como:
 
-Se você deixar `url: ''`, o botão de projeto pode mostrar o aviso de link indisponível.
+- `projects/`
+- `blog/`
+- `stacks/`
 
-### Como trocar posts do blog
-
-Procure por:
-
-```ts
-function createSampleBlogPosts(): BlogPostItem[] {
-```
-
-Cada post tem este formato:
-
-```ts
-{
-  id: crypto.randomUUID(),
-  title: 'Título do post',
-  excerpt: 'Resumo curto',
-  content: 'Texto completo',
-  category: 'Frontend',
-  imageUrl: '/nome-da-imagem.png',
-  likes: 10,
-  views: 100,
-  shares: 5,
-  published: true,
-  updatedAt: daysAgo(1),
-}
-```
-
-O que editar:
-
-- `title`: título do artigo
-- `excerpt`: resumo que aparece no card
-- `content`: texto do artigo
-- `category`: categoria
-- `imageUrl`: imagem do post
-
-### Como trocar habilidades
-
-Procure por:
-
-```ts
-function createSampleStacks(): StackItem[] {
-```
-
-Cada habilidade tem este formato:
-
-```ts
-{
-  id: crypto.randomUUID(),
-  name: 'React',
-  link: 'https://react.dev',
-  imageUrl: 'https://placehold.co/600x400?text=React',
-  updatedAt: daysAgo(1),
-}
-```
-
-O que editar:
-
-- `name`: nome da habilidade
-- `link`: site oficial
-- `imageUrl`: imagem da habilidade
-
-Se `imageUrl` ficar vazio, o admin mostra um placeholder de “Sem imagem”.
+O projeto tenta criar o bucket automaticamente se ele não existir, mas o ideal continua sendo rodar o `supabase/setup.sql`, porque é ele que já cria o bucket e as permissões certas.
 
 ## Como trocar imagens
 
-As imagens públicas ficam normalmente em:
+As imagens do projeto ficam normalmente na pasta:
 
 - `public/`
 
 Exemplos:
 
-- `public/perfil-pinguim-eletrico.png`
-- `public/pinguim-eletrico-cv.txt`
+- `public/profile-placeholder.svg`
+- `public/experience-placeholder.svg`
+- `public/pinguin-em-fuga-no-escritorio.png`
 
 Para usar sua própria imagem:
 
-1. coloque o arquivo dentro da pasta `public`
-2. pegue o nome do arquivo
-3. use esse caminho no código, começando com `/`
+1. coloque o arquivo dentro de `public/`
+2. use o caminho começando com `/`
 
 Exemplo:
 
@@ -309,25 +398,18 @@ Exemplo:
 profileImagePath: '/minha-foto.png'
 ```
 
-## Como trocar a imagem de "link indisponível"
+## Como trocar a imagem do popup de link indisponível
 
-Quando um projeto não tem link, o site abre um popup com uma imagem ilustrativa.
+Quando um projeto está sem link, o site abre um popup com uma imagem.
 
-Hoje essa imagem é um arquivo dentro da pasta:
-
-- `public/`
-
-Exemplo de arquivo:
+Hoje esse popup usa um arquivo em:
 
 - `public/pinguin-em-fuga-no-escritorio.png`
 
-Se você quiser trocar essa imagem:
+Se quiser trocar:
 
-1. coloque sua nova imagem dentro da pasta `public`
-2. use o novo nome do arquivo
-3. atualize o caminho no componente do popup
-
-Arquivo para editar:
+1. coloque a nova imagem em `public/`
+2. edite o componente:
 
 - `src/components/ProjectLinkDialog.tsx`
 
@@ -337,11 +419,9 @@ Exemplo:
 imageSrc="/pinguin-em-fuga-no-escritorio.png"
 ```
 
-Se trocar o nome do arquivo, troque também esse caminho.
-
 ## Como trocar o currículo
 
-O currículo atual é chamado em:
+O currículo é definido no `site-profile.ts` pela propriedade:
 
 - `resumePath`
 
@@ -353,104 +433,60 @@ resumePath: '/meu-curriculo.pdf'
 
 Se quiser usar PDF:
 
-1. coloque o PDF dentro da pasta `public`
+1. coloque o arquivo em `public/`
 2. troque o valor de `resumePath`
 
-## Como usar Supabase
+## Fallbacks visuais
 
-Se você for usar Supabase, o projeto deixa de depender dos dados locais do `storage.ts` para conteúdo salvo no banco.
+O projeto já tem alguns comportamentos de fallback:
 
-Você precisa configurar:
+- se uma lista vier vazia na home, aparece um texto em vez do carrossel vazio
+- se uma habilidade estiver sem imagem, aparece um placeholder de `Sem imagem`
+- se um projeto estiver sem URL, aparece o popup de `link indisponível`
+- se a imagem não tiver `imageAlt`, o projeto usa o título ou o nome do item como fallback
 
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_PUBLISHABLE_KEY`
+## Dica sobre cache
 
-Crie um arquivo `.env` baseado no `.env.example`.
-
-Exemplo:
-
-```env
-VITE_SUPABASE_URL=https://SEU-PROJETO.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=SUA_CHAVE
-```
-
-Depois reinicie o projeto:
-
-```bash
-npm run dev
-```
-
-## Primeiro login com Supabase
-
-Quando o Supabase estiver configurado, o login deixa de usar o modo local e passa a usar o **Supabase Auth**.
-
-### Muito importante
-
-Este template **não deixa um cadastro público aberto para qualquer pessoa**.
-
-Isso foi feito de propósito para evitar que usuários leigos publiquem o projeto com cadastro livre e acabem permitindo que qualquer pessoa crie conta no painel administrativo.
-
-Em resumo:
-
-- não existe tela pública de cadastro
-- o acesso é controlado por você
-- isso reduz o risco de abrir o admin para estranhos
-
-### Como criar o primeiro usuário
-
-Este projeto **não traz um SQL pronto no repositório para criar o primeiro usuário de autenticação**.
-
-O jeito mais simples e seguro é criar o usuário diretamente no painel do Supabase:
-
-1. abra o dashboard do Supabase
-2. vá em `Authentication`
-3. vá em `Users`
-4. clique em `Add user`
-5. crie o email e a senha do primeiro acesso
-
-Depois disso, use esses dados na rota:
-
-```txt
-http://localhost:5173/login
-```
-
-### Sobre SQL no Supabase
-
-Você pode usar o SQL Editor do Supabase para criar tabelas, policies, funções e estrutura do banco.
-
-Mas para o **primeiro usuário de login**, este template não inclui um comando SQL pronto.
-
-Se você quiser muito automatizar isso depois, o ideal é fazer isso com bastante cuidado, porque autenticação não é a parte certa para improviso em projeto público.
-
-## Se eu não quiser usar Supabase
-
-Sem problema.
-
-Nesse caso:
-
-- deixe o Supabase sem configurar
-- edite os dados direto em `src/lib/storage.ts`
-- rode normalmente com `npm run dev`
-
-## Dica importante sobre cache
-
-Às vezes você altera projeto, post ou habilidade e o navegador continua mostrando dados antigos.
-
-Se isso acontecer:
+Se você mudou algum conteúdo e ele não apareceu:
 
 1. feche a aba
 2. abra de novo
-3. se necessário, limpe o `localStorage` do site
+3. faça um hard refresh
+4. se necessário, limpe o `localStorage`
 
-## Arquivos mais importantes do projeto
+Isso pode acontecer principalmente quando você alterna entre modo local e modo Supabase.
 
-- `src/lib/site-profile.ts`: nome, bio, contatos e textos principais
-- `src/lib/storage.ts`: projetos, posts e habilidades locais
-- `src/lib/content-store.ts`: camada que escolhe entre local e Supabase
-- `src/lib/media-storage.ts`: upload e remoção de imagens
-- `src/lib/client.ts`: conexão com Supabase
+## Problemas comuns
+
+### Configurei Supabase e ainda aparece conteúdo do exemplo
+
+Confira:
+
+- o `.env` está no projeto certo
+- você usou `VITE_SUPABASE_PUBLISHABLE_KEY`
+- reiniciou o `npm run dev`
+- rodou o `supabase/setup.sql`
+
+### Não consigo salvar no Supabase
+
+Na maioria das vezes é porque faltou rodar:
+
+- `supabase/setup.sql`
+
+Ele já cria as tabelas, colunas, funções RPC, bucket `assets` e policies.
+
+### Mudei `storage.ts` e não refletiu no navegador
+
+Limpe o cache local do site e recarregue a página.
 
 ## Publicação
+
+Antes de publicar:
+
+- troque os dados fake
+- troque imagens
+- revise links
+- revise o `.env`
 
 Para publicar no GitHub:
 
@@ -467,8 +503,8 @@ git push -u origin main
 Nunca publique:
 
 - `.env`
-- chaves privadas
 - tokens
+- chaves privadas
 - senhas
 
-O projeto já deve manter `.env` fora do Git, mas sempre confira antes de subir.
+Se por engano você subir o `.env`, trate as chaves como vazadas e troque tudo no serviço correspondente.
