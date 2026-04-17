@@ -1,0 +1,23 @@
+Pinguim Elétrico
+Desenvolvedor Júnior de Interfaces Web
+Base polar remota
+
+Resumo
+Profissional em início de carreira com foco em front-end e interfaces administrativas. Entrega melhor quando trabalha com direcionamento claro, revisão próxima e espaço para ajustar erro rápido antes que ele vire avalanche.
+
+Experiência
+- Participação em construção de interfaces para painéis internos e fluxos administrativos
+- Apoio na implementação de componentes React, formulários, tabelas e páginas de detalhe
+- Consumo de APIs REST, tratamento de estados de loading e renderização de dados operacionais
+- Ajustes de layout, responsividade e refinamento visual com feedback de revisão
+- Evolução contínua em componentização, organização de código e correção de rota sob revisão de devs mais experientes
+
+Especialidades
+- React, TypeScript, HTML e CSS
+- Componentes, formulários e páginas administrativas
+- Consumo básico de APIs REST e organização de dados no front
+- Git, versionamento e rotina de revisão
+- Organização, curiosidade técnica e rotina consistente de aprendizado
+
+Contato
+contato@example.com
