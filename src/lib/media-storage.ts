@@ -1,7 +1,22 @@
 import { isSupabaseConfigured, supabase } from './client'
 
-const STORAGE_BUCKET = 'portfolio'
+const STORAGE_BUCKET = 'assets'
 const PUBLIC_SEGMENT = `/storage/v1/object/public/${STORAGE_BUCKET}/`
+
+function isMissingBucketError(message: string) {
+  const normalized = message.toLowerCase()
+  return normalized.includes('bucket not found')
+}
+
+async function ensureStorageBucket() {
+  const { error } = await supabase.storage.createBucket(STORAGE_BUCKET, {
+    public: true,
+  })
+
+  if (error && !isMissingBucketError(error.message) && !error.message.toLowerCase().includes('already exists')) {
+    throw new Error(error.message)
+  }
+}
 
 function getFileExtension(fileName: string) {
   const segments = fileName.split('.')
@@ -27,10 +42,21 @@ export async function uploadMediaFile(file: File, folder: 'projects' | 'blog' | 
   const extension = getFileExtension(file.name)
   const filePath = `${folder}/${crypto.randomUUID()}.${extension}`
 
-  const { error: uploadError } = await supabase.storage.from(STORAGE_BUCKET).upload(filePath, file, {
+  let { error: uploadError } = await supabase.storage.from(STORAGE_BUCKET).upload(filePath, file, {
     cacheControl: '3600',
     upsert: false,
   })
+
+  if (uploadError && isMissingBucketError(uploadError.message)) {
+    await ensureStorageBucket()
+
+    const retryResult = await supabase.storage.from(STORAGE_BUCKET).upload(filePath, file, {
+      cacheControl: '3600',
+      upsert: false,
+    })
+
+    uploadError = retryResult.error
+  }
 
   if (uploadError) {
     throw new Error(uploadError.message)

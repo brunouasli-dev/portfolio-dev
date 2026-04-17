@@ -22,7 +22,6 @@ const EMPTY_DASHBOARD_STATE: DashboardState = {
 const DASHBOARD_CACHE_KEY = 'portfolio.dashboard.remote-cache.v2'
 const DASHBOARD_CACHE_TTL = 1000 * 60 * 3
 
-let hasLoggedFallbackWarning = false
 let memoryDashboardCache: DashboardState | null = null
 let memoryDashboardCacheAt = 0
 
@@ -66,42 +65,9 @@ type StackRow = {
 }
 
 type DashboardCachePayload = {
+  source: 'local' | 'remote'
   savedAt: number
   state: DashboardState
-}
-
-function logFallbackWarning(error: unknown) {
-  if (hasLoggedFallbackWarning) {
-    return
-  }
-
-  hasLoggedFallbackWarning = true
-  console.warn('Supabase content fallback ativo.', error)
-}
-
-function errorMessage(error: unknown) {
-  if (error instanceof Error) {
-    return error.message
-  }
-
-  return String(error)
-}
-
-function shouldUseLocalFallback(error: unknown) {
-  const message = errorMessage(error)
-
-  return [
-    'Supabase client not configured',
-    'Failed to fetch',
-    'FetchError',
-    'network',
-    'Could not find the table',
-    'schema cache',
-    'relation',
-    'does not exist',
-    'Could not find the function',
-    'PGRST',
-  ].some((fragment) => message.toLowerCase().includes(fragment.toLowerCase()))
 }
 
 function mapProjectRow(row: ProjectRow): ProjectItem {
@@ -178,7 +144,7 @@ function isDashboardCacheFresh(savedAt: number) {
   return Date.now() - savedAt < DASHBOARD_CACHE_TTL
 }
 
-function readDashboardCache() {
+function readDashboardCache(expectedSource?: 'local' | 'remote') {
   if (typeof window === 'undefined') {
     return memoryDashboardCache ? cloneDashboardState(memoryDashboardCache) : null
   }
@@ -196,7 +162,13 @@ function readDashboardCache() {
   try {
     const parsed = JSON.parse(rawCache) as DashboardCachePayload
 
-    if (!parsed?.savedAt || !parsed?.state || !isDashboardCacheFresh(parsed.savedAt)) {
+    if (
+      !parsed?.savedAt ||
+      !parsed?.state ||
+      !parsed?.source ||
+      (expectedSource && parsed.source !== expectedSource) ||
+      !isDashboardCacheFresh(parsed.savedAt)
+    ) {
       window.localStorage.removeItem(DASHBOARD_CACHE_KEY)
       return null
     }
@@ -213,7 +185,7 @@ function readDashboardCache() {
   }
 }
 
-function writeDashboardCache(state: DashboardState) {
+function writeDashboardCache(state: DashboardState, source: 'local' | 'remote') {
   const nextState = cloneDashboardState(state)
   const savedAt = Date.now()
 
@@ -222,6 +194,7 @@ function writeDashboardCache(state: DashboardState) {
 
   if (typeof window !== 'undefined') {
     const payload: DashboardCachePayload = {
+      source,
       savedAt,
       state: stripHeavyImagesForCache(nextState),
     }
@@ -286,7 +259,7 @@ function persistLocalDashboardState(nextState: DashboardState) {
   }
 
   saveLocalDashboardState(sortedState)
-  writeDashboardCache(sortedState)
+  writeDashboardCache(sortedState, 'local')
 
   return getLocalDashboardState()
 }
@@ -314,37 +287,27 @@ async function readRemoteDashboardState(): Promise<DashboardState> {
     projects: (projectsResult.data ?? []).map((row) => mapProjectRow(row as ProjectRow)),
     blogPosts: (blogPostsResult.data ?? []).map((row) => mapBlogPostRow(row as BlogPostRow)),
     stacks: (stacksResult.data ?? []).map((row) => mapStackRow(row as StackRow)),
-  })
-}
-
-async function withDashboardFallback<T>(
-  remoteOperation: () => Promise<T>,
-  localOperation: () => T | Promise<T>,
-) {
-  try {
-    return await remoteOperation()
-  } catch (error) {
-    if (!shouldUseLocalFallback(error)) {
-      throw error
-    }
-
-    logFallbackWarning(error)
-    return await localOperation()
-  }
+  }, 'remote')
 }
 
 export async function getDashboardState() {
-  const cachedState = readDashboardCache()
-
-  if (cachedState) {
-    return cachedState
-  }
-
   if (!isSupabaseConfigured) {
+    const cachedState = readDashboardCache('local')
+
+    if (cachedState) {
+      return cachedState
+    }
+
     return getLocalDashboardState()
   }
 
-  return withDashboardFallback(readRemoteDashboardState, () => getLocalDashboardState())
+  const cachedRemoteState = readDashboardCache('remote')
+
+  if (cachedRemoteState) {
+    return cachedRemoteState
+  }
+
+  return readRemoteDashboardState()
 }
 
 export function getEmptyDashboardState() {
@@ -360,186 +323,166 @@ export function getDashboardInteractions() {
 }
 
 export async function saveProject(project: ProjectItem) {
-  return withDashboardFallback(
-    async () => {
-      const { error } = await supabase.from('projects').upsert(toProjectPayload(project))
+  if (isSupabaseConfigured) {
+    const { error } = await supabase.from('projects').upsert(toProjectPayload(project))
 
-      if (error) {
-        throw new Error(error.message)
-      }
+    if (error) {
+      throw new Error(error.message)
+    }
 
-      return await readRemoteDashboardState()
-    },
-    () => {
-      const current = getLocalDashboardState()
-      const nextProjects = current.projects.some((item) => item.id === project.id)
-        ? current.projects.map((item) => (item.id === project.id ? project : item))
-        : [project, ...current.projects]
+    return await readRemoteDashboardState()
+  }
 
-      return persistLocalDashboardState({
-        projects: nextProjects,
-        blogPosts: current.blogPosts,
-        stacks: current.stacks,
-      })
-    },
-  )
+  const current = getLocalDashboardState()
+  const nextProjects = current.projects.some((item) => item.id === project.id)
+    ? current.projects.map((item) => (item.id === project.id ? project : item))
+    : [project, ...current.projects]
+
+  return persistLocalDashboardState({
+    projects: nextProjects,
+    blogPosts: current.blogPosts,
+    stacks: current.stacks,
+  })
 }
 
 export async function deleteProject(projectId: string) {
-  return withDashboardFallback(
-    async () => {
-      const { error } = await supabase.from('projects').delete().eq('id', projectId)
+  if (isSupabaseConfigured) {
+    const { error } = await supabase.from('projects').delete().eq('id', projectId)
 
-      if (error) {
-        throw new Error(error.message)
-      }
+    if (error) {
+      throw new Error(error.message)
+    }
 
-      return await readRemoteDashboardState()
-    },
-    () => {
-      const current = getLocalDashboardState()
+    return await readRemoteDashboardState()
+  }
 
-      return persistLocalDashboardState({
-        projects: current.projects.filter((item) => item.id !== projectId),
-        blogPosts: current.blogPosts,
-        stacks: current.stacks,
-      })
-    },
-  )
+  const current = getLocalDashboardState()
+
+  return persistLocalDashboardState({
+    projects: current.projects.filter((item) => item.id !== projectId),
+    blogPosts: current.blogPosts,
+    stacks: current.stacks,
+  })
 }
 
 export async function incrementProjectMetric(projectId: string, metric: 'likes' | 'views' | 'shares') {
-  return withDashboardFallback(
-    async () => {
-      const { error } = await supabase.rpc('increment_project_metric', {
-        metric_name: metric,
-        project_id: projectId,
-      })
+  if (isSupabaseConfigured) {
+    const { error } = await supabase.rpc('increment_project_metric', {
+      metric_name: metric,
+      project_id: projectId,
+    })
 
-      if (error) {
-        throw new Error(error.message)
-      }
+    if (error) {
+      throw new Error(error.message)
+    }
 
-      return await readRemoteDashboardState()
-    },
-    () => incrementLocalProjectMetric(projectId, metric),
-  )
+    return await readRemoteDashboardState()
+  }
+
+  return incrementLocalProjectMetric(projectId, metric)
 }
 
 export async function saveBlogPost(post: BlogPostItem) {
-  return withDashboardFallback(
-    async () => {
-      const { error } = await supabase.from('blog_posts').upsert(toBlogPostPayload(post))
+  if (isSupabaseConfigured) {
+    const { error } = await supabase.from('blog_posts').upsert(toBlogPostPayload(post))
 
-      if (error) {
-        throw new Error(error.message)
-      }
+    if (error) {
+      throw new Error(error.message)
+    }
 
-      return await readRemoteDashboardState()
-    },
-    () => {
-      const current = getLocalDashboardState()
-      const nextPosts = current.blogPosts.some((item) => item.id === post.id)
-        ? current.blogPosts.map((item) => (item.id === post.id ? post : item))
-        : [post, ...current.blogPosts]
+    return await readRemoteDashboardState()
+  }
 
-      return persistLocalDashboardState({
-        projects: current.projects,
-        blogPosts: nextPosts,
-        stacks: current.stacks,
-      })
-    },
-  )
+  const current = getLocalDashboardState()
+  const nextPosts = current.blogPosts.some((item) => item.id === post.id)
+    ? current.blogPosts.map((item) => (item.id === post.id ? post : item))
+    : [post, ...current.blogPosts]
+
+  return persistLocalDashboardState({
+    projects: current.projects,
+    blogPosts: nextPosts,
+    stacks: current.stacks,
+  })
 }
 
 export async function deleteBlogPost(postId: string) {
-  return withDashboardFallback(
-    async () => {
-      const { error } = await supabase.from('blog_posts').delete().eq('id', postId)
+  if (isSupabaseConfigured) {
+    const { error } = await supabase.from('blog_posts').delete().eq('id', postId)
 
-      if (error) {
-        throw new Error(error.message)
-      }
+    if (error) {
+      throw new Error(error.message)
+    }
 
-      return await readRemoteDashboardState()
-    },
-    () => {
-      const current = getLocalDashboardState()
+    return await readRemoteDashboardState()
+  }
 
-      return persistLocalDashboardState({
-        projects: current.projects,
-        blogPosts: current.blogPosts.filter((item) => item.id !== postId),
-        stacks: current.stacks,
-      })
-    },
-  )
+  const current = getLocalDashboardState()
+
+  return persistLocalDashboardState({
+    projects: current.projects,
+    blogPosts: current.blogPosts.filter((item) => item.id !== postId),
+    stacks: current.stacks,
+  })
 }
 
 export async function incrementBlogPostMetric(postId: string, metric: 'likes' | 'views' | 'shares') {
-  return withDashboardFallback(
-    async () => {
-      const { error } = await supabase.rpc('increment_blog_post_metric', {
-        metric_name: metric,
-        post_id: postId,
-      })
+  if (isSupabaseConfigured) {
+    const { error } = await supabase.rpc('increment_blog_post_metric', {
+      metric_name: metric,
+      post_id: postId,
+    })
 
-      if (error) {
-        throw new Error(error.message)
-      }
+    if (error) {
+      throw new Error(error.message)
+    }
 
-      return await readRemoteDashboardState()
-    },
-    () => incrementLocalBlogPostMetric(postId, metric),
-  )
+    return await readRemoteDashboardState()
+  }
+
+  return incrementLocalBlogPostMetric(postId, metric)
 }
 
 export async function saveStack(stack: StackItem) {
-  return withDashboardFallback(
-    async () => {
-      const { error } = await supabase.from('stacks').upsert(toStackPayload(stack))
+  if (isSupabaseConfigured) {
+    const { error } = await supabase.from('stacks').upsert(toStackPayload(stack))
 
-      if (error) {
-        throw new Error(error.message)
-      }
+    if (error) {
+      throw new Error(error.message)
+    }
 
-      return await readRemoteDashboardState()
-    },
-    () => {
-      const current = getLocalDashboardState()
-      const nextStacks = current.stacks.some((item) => item.id === stack.id)
-        ? current.stacks.map((item) => (item.id === stack.id ? stack : item))
-        : [stack, ...current.stacks]
+    return await readRemoteDashboardState()
+  }
 
-      return persistLocalDashboardState({
-        projects: current.projects,
-        blogPosts: current.blogPosts,
-        stacks: nextStacks,
-      })
-    },
-  )
+  const current = getLocalDashboardState()
+  const nextStacks = current.stacks.some((item) => item.id === stack.id)
+    ? current.stacks.map((item) => (item.id === stack.id ? stack : item))
+    : [stack, ...current.stacks]
+
+  return persistLocalDashboardState({
+    projects: current.projects,
+    blogPosts: current.blogPosts,
+    stacks: nextStacks,
+  })
 }
 
 export async function deleteStack(stackId: string) {
-  return withDashboardFallback(
-    async () => {
-      const { error } = await supabase.from('stacks').delete().eq('id', stackId)
+  if (isSupabaseConfigured) {
+    const { error } = await supabase.from('stacks').delete().eq('id', stackId)
 
-      if (error) {
-        throw new Error(error.message)
-      }
+    if (error) {
+      throw new Error(error.message)
+    }
 
-      return await readRemoteDashboardState()
-    },
-    () => {
-      const current = getLocalDashboardState()
+    return await readRemoteDashboardState()
+  }
 
-      return persistLocalDashboardState({
-        projects: current.projects,
-        blogPosts: current.blogPosts,
-        stacks: current.stacks.filter((item) => item.id !== stackId),
-      })
-    },
-  )
+  const current = getLocalDashboardState()
+
+  return persistLocalDashboardState({
+    projects: current.projects,
+    blogPosts: current.blogPosts,
+    stacks: current.stacks.filter((item) => item.id !== stackId),
+  })
 }
 
 export async function likeProjectOnce(projectId: string) {

@@ -44,6 +44,10 @@ type SupabaseLikeClient = {
   from: (_table: string) => QueryBuilder
   rpc: (_fn: string, _args: Record<string, unknown>) => QueryResult<null>
   storage: {
+    createBucket: (
+      _bucket: string,
+      _options?: { public?: boolean; fileSizeLimit?: string | null },
+    ) => QueryResult<null>
     from: (_bucket: string) => {
       upload: (
         _path: string,
@@ -183,6 +187,9 @@ function createMockSupabaseClient(): SupabaseLikeClient {
       return unavailableError('Supabase client not configured')
     },
     storage: {
+      async createBucket() {
+        return unavailableError('Supabase storage not configured')
+      },
       from() {
         return {
           async upload() {

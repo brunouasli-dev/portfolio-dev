@@ -273,6 +273,7 @@ function ContentCarousel<T extends { id: string }>({
   sectionClassName,
   cardClassName,
   trackClassName,
+  emptyMessage = 'Nenhum item foi encontrado nesta seção ainda.',
 }: {
   eyebrow: string
   title: string
@@ -284,6 +285,7 @@ function ContentCarousel<T extends { id: string }>({
   sectionClassName?: string
   cardClassName?: string
   trackClassName?: string
+  emptyMessage?: string
 }) {
   const viewportRef = useRef<HTMLDivElement>(null)
 
@@ -330,17 +332,24 @@ function ContentCarousel<T extends { id: string }>({
         </div>
       </div>
 
-      <div
-        ref={viewportRef}
-        className={`carousel-track${trackClassName ? ` ${trackClassName}` : ''}`}
-        aria-label={title}
-      >
-        {items.map((item) => (
-          <article key={item.id} className={`carousel-card${cardClassName ? ` ${cardClassName}` : ''}`}>
-            {renderItem(item)}
-          </article>
-        ))}
-      </div>
+      {items.length === 0 ? (
+        <div className="empty-state">
+          <strong>Nada por aqui ainda.</strong>
+          <p>{emptyMessage}</p>
+        </div>
+      ) : (
+        <div
+          ref={viewportRef}
+          className={`carousel-track${trackClassName ? ` ${trackClassName}` : ''}`}
+          aria-label={title}
+        >
+          {items.map((item) => (
+            <article key={item.id} className={`carousel-card${cardClassName ? ` ${cardClassName}` : ''}`}>
+              {renderItem(item)}
+            </article>
+          ))}
+        </div>
+      )}
     </section>
   )
 }

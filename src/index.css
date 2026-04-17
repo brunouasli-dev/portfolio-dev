@@ -2378,8 +2378,10 @@ h3 {
 .toggle-row {
   display: inline-flex;
   align-items: center;
+  align-self: end;
   gap: 10px;
-  min-height: 48px;
+  min-height: 53.6px;
+  height: 53.6px;
   padding: 0 14px;
   border-radius: var(--radius-md);
   border: 1px solid var(--line);
