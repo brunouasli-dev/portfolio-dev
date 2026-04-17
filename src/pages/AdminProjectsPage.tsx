@@ -18,6 +18,7 @@ type ProjectDraft = {
   stack: string
   url: string
   imageUrl: string
+  imageAlt: string
   likes: number
   views: number
   shares: number
@@ -30,6 +31,7 @@ const emptyProjectDraft: ProjectDraft = {
   stack: '',
   url: '',
   imageUrl: '',
+  imageAlt: '',
   likes: 0,
   views: 0,
   shares: 0,
@@ -90,6 +92,7 @@ export function AdminProjectsPage() {
       stack: project.stack,
       url: project.url,
       imageUrl: project.imageUrl,
+      imageAlt: project.imageAlt,
       likes: project.likes,
       views: project.views,
       shares: project.shares,
@@ -114,6 +117,7 @@ export function AdminProjectsPage() {
       stack: projectDraft.stack.trim(),
       url: projectDraft.url.trim(),
       imageUrl: projectDraft.imageUrl,
+      imageAlt: projectDraft.imageAlt.trim(),
       likes: projectDraft.likes,
       views: projectDraft.views,
       shares: projectDraft.shares,
@@ -239,7 +243,7 @@ export function AdminProjectsPage() {
               <article key={project.id} className="admin-content-card">
                 <div className="admin-content-media">
                   {project.imageUrl ? (
-                    <img className="admin-content-image" src={project.imageUrl} alt={project.title} />
+                    <img className="admin-content-image" src={project.imageUrl} alt={project.imageAlt || project.title} />
                   ) : null}
 
                   <div className="admin-content-badges">
@@ -392,6 +396,17 @@ export function AdminProjectsPage() {
                   </div>
                 ) : null}
               </div>
+
+              <label className="field">
+                <span>Texto alternativo da imagem</span>
+                <input
+                  value={projectDraft.imageAlt}
+                  onChange={(event) =>
+                    setProjectDraft((current) => ({ ...current, imageAlt: event.target.value }))
+                  }
+                  placeholder="Descreva a imagem do projeto"
+                />
+              </label>
 
               <div className="field-grid metrics-grid">
                 <label className="field">

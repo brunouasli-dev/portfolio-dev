@@ -2,7 +2,7 @@ import type { BlogPostItem, DashboardState, ProjectItem, StackItem } from '../ty
 
 const STORAGE_KEYS = {
   dashboard: 'portfolio.dashboard.state',
-  sampleContent: 'portfolio.dashboard.sample-content.v12',
+  sampleContent: 'portfolio.dashboard.sample-content.v13',
   interactions: 'portfolio.dashboard.interactions.v1',
 } as const
 
@@ -151,6 +151,7 @@ export function getDashboardState() {
     projects: sanitizedState.projects.map((project) => ({
       ...normalizeProjectCopy(project),
       imageUrl: project.imageUrl ?? '',
+      imageAlt: project.imageAlt ?? project.title ?? '',
       likes: project.likes ?? 0,
       views: project.views ?? 0,
       shares: project.shares ?? 0,
@@ -159,6 +160,7 @@ export function getDashboardState() {
       ...normalizeBlogPostCopy(post),
       content: post.content ?? '',
       imageUrl: post.imageUrl ?? '',
+      imageAlt: post.imageAlt ?? post.title ?? '',
       likes: post.likes ?? 0,
       views: post.views ?? 0,
       shares: post.shares ?? 0,
@@ -167,6 +169,7 @@ export function getDashboardState() {
       ...stack,
       link: stack.link ?? '',
       imageUrl: stack.imageUrl ?? '',
+      imageAlt: stack.imageAlt ?? stack.name ?? '',
     })),
   }
 }
@@ -541,6 +544,7 @@ function mergeSampleProjects(currentProjects: ProjectItem[]) {
       ...project,
       url: sampleTitles.has(project.title) ? sampleProject.url : project.url,
       imageUrl: project.imageUrl || sampleProject.imageUrl,
+      imageAlt: project.imageAlt || sampleProject.imageAlt,
     }
   })
 
@@ -582,6 +586,7 @@ function mergeSampleBlogPosts(currentPosts: BlogPostItem[]) {
     return {
       ...post,
       imageUrl: post.imageUrl || samplePost.imageUrl,
+      imageAlt: post.imageAlt || samplePost.imageAlt,
       likes: post.likes ?? samplePost.likes,
       views: post.views ?? samplePost.views,
       shares: post.shares ?? samplePost.shares,
@@ -621,6 +626,7 @@ function mergeSampleStacks(currentStacks: StackItem[]) {
     return {
       ...stack,
       imageUrl: sampleStack.imageUrl || stack.imageUrl,
+      imageAlt: stack.imageAlt || sampleStack.imageAlt,
       link: stack.link || sampleStack.link,
     }
   })
@@ -670,6 +676,7 @@ function createSampleProjects(): ProjectItem[] {
       stack: 'React, TypeScript, Recharts, Node.js',
       url: '',
       imageUrl: '/penguins-enfrentam-caos-no-laboratorio-eletrico.png',
+      imageAlt: 'Pinguins enfrentando caos no laboratório elétrico cercados por raios, cabos e telas de monitoramento.',
       likes: 38,
       views: 512,
       shares: 19,
@@ -683,6 +690,7 @@ function createSampleProjects(): ProjectItem[] {
       stack: 'Next.js, TypeScript, PostgreSQL, Redis',
       url: '',
       imageUrl: '/aperto-no-balcao-de-gelo.png',
+      imageAlt: 'Pinguins tensos no balcão de uma loja de gelo gourmet tentando salvar o fluxo de compra.',
       likes: 42,
       views: 603,
       shares: 23,
@@ -696,6 +704,7 @@ function createSampleProjects(): ProjectItem[] {
       stack: 'React, Supabase, Tailwind CSS, Storage',
       url: '',
       imageUrl: '/desafio-no-painel-de-controle.png',
+      imageAlt: 'Pinguins encarando um painel de controle cheio de botões e decisões perigosas de interface.',
       likes: 29,
       views: 447,
       shares: 14,
@@ -709,6 +718,7 @@ function createSampleProjects(): ProjectItem[] {
       stack: 'React, WebSocket, Express, PostgreSQL',
       url: '',
       imageUrl: '/pinguins-em-crise-no-painel-de-alertas.png',
+      imageAlt: 'Pinguins em crise observando um painel de alertas com sinais de emergência e bugs.',
       likes: 24,
       views: 331,
       shares: 12,
@@ -722,6 +732,7 @@ function createSampleProjects(): ProjectItem[] {
       stack: 'React, Recharts, Supabase, SQL',
       url: '',
       imageUrl: '/penguins-em-crise-no-escritorio.png',
+      imageAlt: 'Pinguins preocupados no escritório olhando gráficos e métricas que claramente deram errado.',
       likes: 35,
       views: 489,
       shares: 21,
@@ -741,6 +752,7 @@ function createSampleBlogPosts(): BlogPostItem[] {
         'Pinguim Trovoada passou ao Pinguim Elétrico a tarefa de montar um admin panel que prestasse para uso diário, não só para screenshot bonito. O Elétrico foi valente, montou tabela, botão azul e campo de busca com autoconfiança acima do recomendado. Pouco depois apareceram permissão, estado vazio, erro, ação perigosa e fluxo repetitivo, tudo ao mesmo tempo, como manda o folclore do software administrativo. O Trovoada entrou na revisão, apontou os buracos com precisão glacial e mostrou que painel bom precisa cansar menos do que o operador. O resultado foi um admin menos enfeitado, menos ingênuo e muito mais utilizável.',
       category: 'Produto',
       imageUrl: '/penguins-em-panico-no-escritorio-de-ti.png',
+      imageAlt: 'Pinguins em pânico em um escritório de TI tentando sobreviver ao primeiro painel administrativo.',
       likes: 26,
       views: 314,
       shares: 15,
@@ -755,6 +767,7 @@ function createSampleBlogPosts(): BlogPostItem[] {
         'Pinguim Trovoada pediu ao Pinguim Elétrico uma interface pronta para uso real, com cara de produto e estrutura para aguentar o mundo fora da demo. O Elétrico entregou algo bonito, alinhado, cheio de brilho e completamente despreparado para o primeiro clique torto vindo do usuário. Foi aí que ouviu, com toda a ternura possível de um sênior congelado, que caminho feliz não paga boleto nem segura produto no ar. Interface pronta de verdade aguenta conexão lenta, erro, confirmação, cancelamento e informação esquisita sem implorar por misericórdia. O resto é cartaz com autoestima alta tentando se passar por software maduro.',
       category: 'Design de Produto',
       imageUrl: '/pinguins-em-crise-no-escritorio-e-eletrico-com-medo-do-dialogo.png',
+      imageAlt: 'Pinguins em crise no escritório enquanto o Pinguim Elétrico encara um diálogo que deu errado.',
       likes: 31,
       views: 402,
       shares: 18,
@@ -769,6 +782,7 @@ function createSampleBlogPosts(): BlogPostItem[] {
         'Pinguim Trovoada passou para o Pinguim Elétrico uma integração que, no papel, parecia civilizada e sem armadilha. O Elétrico acreditou demais nisso, ligou API direto no componente e prometeu para si mesmo que arrumaria o resto depois. O depois chegou em velocidade absurda: payload torto, fallback improvisado e regra de negócio brotando onde não devia nem respirar. O Trovoada olhou a cena, respirou fundo e explicou que integração mal isolada vira geleia arquitetural em dois dias úteis. A correção veio separando contrato, adaptação de dados e leitura de erro, deixando a interface livre para fazer o que realmente importa sem colapsar no processo.',
       category: 'Arquitetura',
       imageUrl: '/pinguins-enfrentando-integracao-de-apis.png',
+      imageAlt: 'Pinguins enfrentando uma integração de APIs cercados por telas, dados e sinais de erro.',
       likes: 28,
       views: 356,
       shares: 16,
@@ -783,6 +797,7 @@ function createSampleBlogPosts(): BlogPostItem[] {
         'Pinguim Trovoada pediu ao Pinguim Elétrico um dashboard útil para operação, mas o Elétrico interpretou isso como licença poética para criar uma central nuclear cenográfica com gráfico piscando em tudo que fosse canto. Na cabeça dele, número pulando significava relevância. Na prática, o Trovoada lembrou que tempo real custa arquitetura, atenção e um pedaço considerável da sanidade de quem dá manutenção. Se a operação decide algo a cada cinco minutos, polling curto resolve. Se a análise é diária, gráfico piscando é só teatro técnico com orçamento alto. Foi assim que o dashboard parou de tentar impressionar e começou a ajudar alguém de verdade.',
       category: 'Dados',
       imageUrl: '/pinguins-em-acao-frente-ao-painel.png',
+      imageAlt: 'Pinguins diante de um grande painel de dados tentando entender o que realmente importa em tempo real.',
       likes: 17,
       views: 241,
       shares: 9,
@@ -797,6 +812,7 @@ function createSampleBlogPosts(): BlogPostItem[] {
         'Pinguim Trovoada pediu ao Pinguim Elétrico que organizasse os componentes do projeto para evitar repetição boba e acelerar a manutenção. O Elétrico entendeu a missão do jeito mais perigoso possível: decidiu que toda caixinha com sombra suave merecia virar componente global. Foi assim que quase nasceu o infame CardUniversalPremium, primo do BoxMasterFlex e de outras entidades que jamais deveriam ver a luz do monitor. O Trovoada interveio a tempo e explicou o critério real: componentizar o que compartilha intenção, comportamento e regra de uso, não só aparência. Quando o componente nasce do contexto certo, ele acelera o produto. Quando nasce do ego, ele só ganha nome pomposo, documentação esquecida e um futuro triste na próxima refatoração.',
       category: 'Frontend',
       imageUrl: '/penguin-batalha-no-escritorio-de-ui.png',
+      imageAlt: 'Pinguins em batalha em um escritório de UI discutindo componentes e decisões de interface.',
       likes: 23,
       views: 287,
       shares: 13,
@@ -813,6 +829,7 @@ function createSampleStacks(): StackItem[] {
       name: 'React',
       link: 'https://react.dev',
       imageUrl: 'https://placehold.co/600x400?text=React',
+      imageAlt: 'Placeholder com o nome React.',
       updatedAt: daysAgo(1),
     },
     {
@@ -820,6 +837,7 @@ function createSampleStacks(): StackItem[] {
       name: 'TypeScript',
       link: 'https://www.typescriptlang.org',
       imageUrl: 'https://placehold.co/600x400?text=TypeScript',
+      imageAlt: 'Placeholder com o nome TypeScript.',
       updatedAt: daysAgo(2),
     },
     {
@@ -827,6 +845,7 @@ function createSampleStacks(): StackItem[] {
       name: 'Node.js',
       link: 'https://nodejs.org',
       imageUrl: 'https://placehold.co/600x400?text=Node.js',
+      imageAlt: 'Placeholder com o nome Node.js.',
       updatedAt: daysAgo(3),
     },
     {
@@ -834,6 +853,7 @@ function createSampleStacks(): StackItem[] {
       name: 'Supabase',
       link: 'https://supabase.com',
       imageUrl: 'https://placehold.co/600x400?text=Supabase',
+      imageAlt: 'Placeholder com o nome Supabase.',
       updatedAt: daysAgo(4),
     },
     {
@@ -841,6 +861,7 @@ function createSampleStacks(): StackItem[] {
       name: 'PostgreSQL',
       link: 'https://www.postgresql.org',
       imageUrl: 'https://placehold.co/600x400?text=PostgreSQL',
+      imageAlt: 'Placeholder com o nome PostgreSQL.',
       updatedAt: daysAgo(5),
     },
     {
@@ -848,6 +869,7 @@ function createSampleStacks(): StackItem[] {
       name: 'PHP',
       link: 'https://www.php.net',
       imageUrl: 'https://placehold.co/600x400?text=PHP',
+      imageAlt: 'Placeholder com o nome PHP.',
       updatedAt: daysAgo(6),
     },
     {
@@ -855,6 +877,7 @@ function createSampleStacks(): StackItem[] {
       name: 'HTML',
       link: 'https://developer.mozilla.org/docs/Web/HTML',
       imageUrl: 'https://placehold.co/600x400?text=HTML',
+      imageAlt: 'Placeholder com o nome HTML.',
       updatedAt: daysAgo(7),
     },
     {
@@ -862,6 +885,7 @@ function createSampleStacks(): StackItem[] {
       name: 'CSS',
       link: 'https://developer.mozilla.org/docs/Web/CSS',
       imageUrl: 'https://placehold.co/600x400?text=CSS',
+      imageAlt: 'Placeholder com o nome CSS.',
       updatedAt: daysAgo(8),
     },
     {
@@ -869,6 +893,7 @@ function createSampleStacks(): StackItem[] {
       name: 'Next.js',
       link: 'https://nextjs.org',
       imageUrl: 'https://placehold.co/600x400?text=Next.js',
+      imageAlt: 'Placeholder com o nome Next.js.',
       updatedAt: daysAgo(9),
     },
     {
@@ -876,6 +901,7 @@ function createSampleStacks(): StackItem[] {
       name: 'GitHub',
       link: 'https://github.com',
       imageUrl: 'https://placehold.co/600x400?text=GitHub',
+      imageAlt: 'Placeholder com o nome GitHub.',
       updatedAt: daysAgo(10),
     },
     {
@@ -883,6 +909,7 @@ function createSampleStacks(): StackItem[] {
       name: 'Tailwind CSS',
       link: 'https://tailwindcss.com',
       imageUrl: 'https://placehold.co/600x400?text=Tailwind',
+      imageAlt: 'Placeholder com o nome Tailwind CSS.',
       updatedAt: daysAgo(11),
     },
     {
@@ -890,6 +917,7 @@ function createSampleStacks(): StackItem[] {
       name: 'Docker',
       link: 'https://www.docker.com',
       imageUrl: 'https://placehold.co/600x400?text=Docker',
+      imageAlt: 'Placeholder com o nome Docker.',
       updatedAt: daysAgo(12),
     },
     {
@@ -897,6 +925,7 @@ function createSampleStacks(): StackItem[] {
       name: 'WordPress',
       link: 'https://wordpress.org',
       imageUrl: 'https://placehold.co/600x400?text=WordPress',
+      imageAlt: 'Placeholder com o nome WordPress.',
       updatedAt: daysAgo(13),
     },
     {
@@ -904,6 +933,7 @@ function createSampleStacks(): StackItem[] {
       name: 'WooCommerce',
       link: 'https://woocommerce.com',
       imageUrl: 'https://placehold.co/600x400?text=WooCommerce',
+      imageAlt: 'Placeholder com o nome WooCommerce.',
       updatedAt: daysAgo(14),
     },
     {
@@ -911,6 +941,7 @@ function createSampleStacks(): StackItem[] {
       name: 'Tray',
       link: 'https://tray.com.br',
       imageUrl: 'https://placehold.co/600x400?text=Tray',
+      imageAlt: 'Placeholder com o nome Tray.',
       updatedAt: daysAgo(15),
     },
     {
@@ -918,6 +949,7 @@ function createSampleStacks(): StackItem[] {
       name: 'Nuvemshop',
       link: 'https://www.nuvemshop.com.br',
       imageUrl: 'https://placehold.co/600x400?text=Nuvemshop',
+      imageAlt: 'Placeholder com o nome Nuvemshop.',
       updatedAt: daysAgo(16),
     },
     {
@@ -925,6 +957,7 @@ function createSampleStacks(): StackItem[] {
       name: 'JavaScript',
       link: 'https://developer.mozilla.org/docs/Web/JavaScript',
       imageUrl: 'https://placehold.co/600x400?text=JavaScript',
+      imageAlt: 'Placeholder com o nome JavaScript.',
       updatedAt: daysAgo(17),
     },
     {
@@ -932,6 +965,7 @@ function createSampleStacks(): StackItem[] {
       name: 'MySQL',
       link: 'https://www.mysql.com',
       imageUrl: 'https://placehold.co/600x400?text=MySQL',
+      imageAlt: 'Placeholder com o nome MySQL.',
       updatedAt: daysAgo(18),
     },
     {
@@ -939,6 +973,7 @@ function createSampleStacks(): StackItem[] {
       name: 'Git',
       link: 'https://git-scm.com',
       imageUrl: 'https://placehold.co/600x400?text=Git',
+      imageAlt: 'Placeholder com o nome Git.',
       updatedAt: daysAgo(19),
     },
     {
@@ -946,6 +981,7 @@ function createSampleStacks(): StackItem[] {
       name: 'Linux',
       link: 'https://kernel.org',
       imageUrl: 'https://placehold.co/600x400?text=Linux',
+      imageAlt: 'Placeholder com o nome Linux.',
       updatedAt: daysAgo(20),
     },
     {
@@ -953,6 +989,7 @@ function createSampleStacks(): StackItem[] {
       name: 'APIs REST',
       link: 'https://swagger.io/resources/articles/best-practices-in-api-design/',
       imageUrl: 'https://placehold.co/600x400?text=REST+API',
+      imageAlt: 'Placeholder com o nome APIs REST.',
       updatedAt: daysAgo(21),
     },
   ]

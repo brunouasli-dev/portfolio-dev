@@ -97,7 +97,7 @@ function BlogCatalogCard({
     <article className="carousel-card catalog-card">
       <button className="carousel-card-link-area" type="button" onClick={() => void handleOpenPost()}>
         <div className="carousel-media">
-          {post.imageUrl ? <img className="carousel-image" src={post.imageUrl} alt={post.title} /> : null}
+          {post.imageUrl ? <img className="carousel-image" src={post.imageUrl} alt={post.imageAlt || post.title} /> : null}
 
           <div className="carousel-badges">
             <span className="carousel-overlay-badge">{post.category}</span>

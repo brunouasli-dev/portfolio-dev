@@ -371,7 +371,7 @@ function ProjectCard({
     <>
       <button className="carousel-card-link-area" type="button" onClick={() => void handleOpenProject()}>
         <div className="carousel-media">
-          {project.imageUrl ? <img className="carousel-image" src={project.imageUrl} alt={project.title} /> : null}
+          {project.imageUrl ? <img className="carousel-image" src={project.imageUrl} alt={project.imageAlt || project.title} /> : null}
         </div>
 
         <div className="carousel-card-body">
@@ -436,7 +436,7 @@ function BlogCard({
     <>
       <button className="carousel-card-link-area" type="button" onClick={() => void handleOpenPost()}>
         <div className="carousel-media">
-          {post.imageUrl ? <img className="carousel-image" src={post.imageUrl} alt={post.title} /> : null}
+          {post.imageUrl ? <img className="carousel-image" src={post.imageUrl} alt={post.imageAlt || post.title} /> : null}
 
           <div className="carousel-badges">
             <span className="carousel-overlay-badge">{post.category}</span>
@@ -483,7 +483,7 @@ function StackCard({ stack }: { stack: StackItem }) {
   return (
     <>
       <div className="carousel-media">
-        <StackLogo name={stack.name} imageUrl={stack.imageUrl} />
+        <StackLogo name={stack.name} imageUrl={stack.imageUrl} imageAlt={stack.imageAlt} />
       </div>
 
       <div className="carousel-card-body">

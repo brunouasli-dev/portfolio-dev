@@ -158,7 +158,7 @@ function ProjectDetailContent({ projectId }: { projectId: string }) {
         <article className="detail-main panel">
         <div className="detail-media">
           {currentProject.imageUrl ? (
-            <img className="detail-image" src={currentProject.imageUrl} alt={currentProject.title} />
+            <img className="detail-image" src={currentProject.imageUrl} alt={currentProject.imageAlt || currentProject.title} />
           ) : null}
 
           <div className="detail-media-overlay detail-media-overlay-desktop">
@@ -273,7 +273,7 @@ function ProjectDetailContent({ projectId }: { projectId: string }) {
                 onClick={() => void handleOpenRelatedProject(item.id)}
               >
                 {item.imageUrl ? (
-                  <img className="detail-related-image" src={item.imageUrl} alt={item.title} />
+                  <img className="detail-related-image" src={item.imageUrl} alt={item.imageAlt || item.title} />
                 ) : null}
                 <div className="detail-related-body">
                   <strong>{item.title}</strong>

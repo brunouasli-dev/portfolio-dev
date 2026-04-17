@@ -18,6 +18,7 @@ type BlogDraft = {
   content: string
   category: string
   imageUrl: string
+  imageAlt: string
   likes: number
   views: number
   shares: number
@@ -30,6 +31,7 @@ const emptyBlogDraft: BlogDraft = {
   content: '',
   category: '',
   imageUrl: '',
+  imageAlt: '',
   likes: 0,
   views: 0,
   shares: 0,
@@ -90,6 +92,7 @@ export function AdminBlogPage() {
       content: post.content,
       category: post.category,
       imageUrl: post.imageUrl,
+      imageAlt: post.imageAlt,
       likes: post.likes,
       views: post.views,
       shares: post.shares,
@@ -114,6 +117,7 @@ export function AdminBlogPage() {
       content: blogDraft.content.trim(),
       category: blogDraft.category.trim(),
       imageUrl: blogDraft.imageUrl,
+      imageAlt: blogDraft.imageAlt.trim(),
       likes: blogDraft.likes,
       views: blogDraft.views,
       shares: blogDraft.shares,
@@ -239,7 +243,7 @@ export function AdminBlogPage() {
               <article key={post.id} className="admin-content-card">
                 <div className="admin-content-media">
                   {post.imageUrl ? (
-                    <img className="admin-content-image" src={post.imageUrl} alt={post.title} />
+                    <img className="admin-content-image" src={post.imageUrl} alt={post.imageAlt || post.title} />
                   ) : null}
 
                   <div className="admin-content-badges">
@@ -408,6 +412,17 @@ export function AdminBlogPage() {
                   </div>
                 ) : null}
               </div>
+
+              <label className="field">
+                <span>Texto alternativo da imagem</span>
+                <input
+                  value={blogDraft.imageAlt}
+                  onChange={(event) =>
+                    setBlogDraft((current) => ({ ...current, imageAlt: event.target.value }))
+                  }
+                  placeholder="Descreva a imagem do post"
+                />
+              </label>
 
               <div className="field-grid metrics-grid">
                 <label className="field">

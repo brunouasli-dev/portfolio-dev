@@ -33,6 +33,7 @@ type ProjectRow = {
   stack: string
   url: string
   image_url: string
+  image_alt?: string
   likes: number
   views: number
   shares: number
@@ -47,6 +48,7 @@ type BlogPostRow = {
   content: string
   category: string
   image_url: string
+  image_alt?: string
   likes: number
   views: number
   shares: number
@@ -59,6 +61,7 @@ type StackRow = {
   name: string
   link: string
   image_url: string
+  image_alt?: string
   updated_at: string
 }
 
@@ -109,6 +112,7 @@ function mapProjectRow(row: ProjectRow): ProjectItem {
     stack: row.stack,
     url: row.url,
     imageUrl: row.image_url,
+    imageAlt: row.image_alt ?? row.title,
     likes: row.likes,
     views: row.views,
     shares: row.shares,
@@ -125,6 +129,7 @@ function mapBlogPostRow(row: BlogPostRow): BlogPostItem {
     content: row.content,
     category: row.category,
     imageUrl: row.image_url,
+    imageAlt: row.image_alt ?? row.title,
     likes: row.likes,
     views: row.views,
     shares: row.shares,
@@ -139,6 +144,7 @@ function mapStackRow(row: StackRow): StackItem {
     name: row.name,
     link: row.link,
     imageUrl: row.image_url,
+    imageAlt: row.image_alt ?? row.name,
     updatedAt: row.updated_at,
   }
 }
@@ -238,6 +244,7 @@ function toProjectPayload(project: ProjectItem) {
     stack: project.stack.trim(),
     url: project.url.trim(),
     image_url: project.imageUrl,
+    image_alt: project.imageAlt.trim(),
     likes: project.likes,
     views: project.views,
     shares: project.shares,
@@ -253,6 +260,7 @@ function toBlogPostPayload(post: BlogPostItem) {
     content: post.content.trim(),
     category: post.category.trim(),
     image_url: post.imageUrl,
+    image_alt: post.imageAlt.trim(),
     likes: post.likes,
     views: post.views,
     shares: post.shares,
@@ -266,6 +274,7 @@ function toStackPayload(stack: StackItem) {
     name: stack.name.trim(),
     link: stack.link.trim(),
     image_url: stack.imageUrl,
+    image_alt: stack.imageAlt.trim(),
   }
 }
 

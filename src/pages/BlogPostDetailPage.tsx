@@ -146,7 +146,7 @@ function BlogPostDetailContent({ postId }: { postId: string }) {
       <article className="detail-main detail-main-blog panel">
         <div className="detail-media">
           {currentPost.imageUrl ? (
-            <img className="detail-image" src={currentPost.imageUrl} alt={currentPost.title} />
+            <img className="detail-image" src={currentPost.imageUrl} alt={currentPost.imageAlt || currentPost.title} />
           ) : null}
 
           <div className="detail-media-overlay">
@@ -241,7 +241,7 @@ function BlogPostDetailContent({ postId }: { postId: string }) {
                 onClick={() => void handleOpenRelatedPost(item.id)}
               >
                 {item.imageUrl ? (
-                  <img className="detail-related-image" src={item.imageUrl} alt={item.title} />
+                  <img className="detail-related-image" src={item.imageUrl} alt={item.imageAlt || item.title} />
                 ) : null}
                 <div className="detail-related-body">
                   <strong>{item.title}</strong>

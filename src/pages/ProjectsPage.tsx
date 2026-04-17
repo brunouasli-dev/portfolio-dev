@@ -122,7 +122,7 @@ function ProjectCatalogCard({
           }}
         >
           <div className="carousel-media">
-            {project.imageUrl ? <img className="carousel-image" src={project.imageUrl} alt={project.title} /> : null}
+            {project.imageUrl ? <img className="carousel-image" src={project.imageUrl} alt={project.imageAlt || project.title} /> : null}
             <button
               className="button-secondary carousel-card-link carousel-card-link-mobile"
               type="button"

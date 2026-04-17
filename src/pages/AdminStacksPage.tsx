@@ -12,12 +12,14 @@ type StackDraft = {
   name: string
   link: string
   imageUrl: string
+  imageAlt: string
 }
 
 const emptyStackDraft: StackDraft = {
   name: '',
   link: '',
   imageUrl: '',
+  imageAlt: '',
 }
 
 export function AdminStacksPage() {
@@ -72,6 +74,7 @@ export function AdminStacksPage() {
       name: stack.name,
       link: stack.link,
       imageUrl: stack.imageUrl,
+      imageAlt: stack.imageAlt,
     })
     setIsModalOpen(true)
   }
@@ -90,6 +93,7 @@ export function AdminStacksPage() {
       name: stackDraft.name.trim(),
       link: stackDraft.link.trim(),
       imageUrl: stackDraft.imageUrl,
+      imageAlt: stackDraft.imageAlt.trim(),
       updatedAt: now,
     }
 
@@ -204,7 +208,7 @@ export function AdminStacksPage() {
             {stacks.map((stack) => (
               <article key={stack.id} className="admin-content-card">
                 <div className="admin-content-media">
-                  <StackLogo name={stack.name} imageUrl={stack.imageUrl} variant="admin" />
+                  <StackLogo name={stack.name} imageUrl={stack.imageUrl} imageAlt={stack.imageAlt} variant="admin" />
                 </div>
 
                 <div className="admin-content-body">
@@ -299,6 +303,17 @@ export function AdminStacksPage() {
                   </div>
                 ) : null}
               </div>
+
+              <label className="field">
+                <span>Texto alternativo da imagem</span>
+                <input
+                  value={stackDraft.imageAlt}
+                  onChange={(event) =>
+                    setStackDraft((current) => ({ ...current, imageAlt: event.target.value }))
+                  }
+                  placeholder="Descreva a imagem da habilidade"
+                />
+              </label>
 
               <div className="admin-modal-actions">
                 <button className="button-secondary" type="button" onClick={closeModal}>

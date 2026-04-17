@@ -5,6 +5,7 @@ export type ProjectItem = {
   stack: string
   url: string
   imageUrl: string
+  imageAlt: string
   likes: number
   views: number
   shares: number
@@ -19,6 +20,7 @@ export type BlogPostItem = {
   content: string
   category: string
   imageUrl: string
+  imageAlt: string
   likes: number
   views: number
   shares: number
@@ -31,6 +33,7 @@ export type StackItem = {
   name: string
   link: string
   imageUrl: string
+  imageAlt: string
   updatedAt: string
 }
 

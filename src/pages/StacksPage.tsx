@@ -40,7 +40,7 @@ export function StacksPage() {
         {stacks.map((stack) => (
           <article key={stack.id} className="carousel-card catalog-card stacks-carousel-card">
             <div className="carousel-media">
-              <StackLogo name={stack.name} imageUrl={stack.imageUrl} />
+              <StackLogo name={stack.name} imageUrl={stack.imageUrl} imageAlt={stack.imageAlt} />
             </div>
 
             <div className="carousel-card-body">
