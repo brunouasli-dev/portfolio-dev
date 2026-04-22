@@ -104,8 +104,8 @@ export function HomePage() {
           </div>
         </div>
 
-        <div className="about-image-card">
-          <div className="about-image-frame">
+        <div className="hero-image-card">
+          <div className="hero-image-frame">
             <img src={siteProfile.profileImagePath} alt={`Retrato ilustrado de ${siteProfile.fullName}`} />
           </div>
         </div>
@@ -113,14 +113,6 @@ export function HomePage() {
 
       <section id="sobre" className="about-section panel">
         <div className="about-layout">
-          <div className="about-copy">
-            <span className="eyebrow">SOBRE</span>
-            <h2>{siteProfile.aboutTitle}</h2>
-            {siteProfile.aboutParagraphs.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-          </div>
-
           <div className="about-image-card">
             <div className="about-image-frame">
               <img
@@ -128,6 +120,14 @@ export function HomePage() {
                 alt={`Imagem conceitual de projetos de ${siteProfile.fullName}`}
               />
             </div>
+          </div>
+
+          <div className="about-copy">
+            <span className="eyebrow">SOBRE</span>
+            <h2>{siteProfile.aboutTitle}</h2>
+            {siteProfile.aboutParagraphs.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
           </div>
         </div>
       </section>
