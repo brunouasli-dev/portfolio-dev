@@ -20,7 +20,7 @@ Se você quiser me contratar para:
 
 Fale comigo em:
 
-- WhatsApp: `https://wa.me/5541997609480`
+- WhatsApp: `https://wa.me/5541997609480?text=Entrei%20em%20contato%20pois%20quero%20uma%20consultoria%20sobre%20o%20template%20gr%C3%A1tis%20fornecido%20no%20GitHub.`
 - Email: `brunouaslidev@gmail.com`
 - GitHub: `https://github.com/brunouasli-dev`
 
